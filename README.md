@@ -3,7 +3,8 @@
 This repository contains a set of examples developed during, but not limited to the live coding sessions.
 
 1. [Lesson 1](./lesson_1) - a webhook example
-2. [Lesson 2](./lesson_2) - WIP
+2. [Lesson 2](./lesson_2) - some basic requirements and API definition for the core of the serverless platform
+3. [Lesson 3](./lesson_3) - WIP
 
 
 ### License
