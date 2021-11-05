@@ -4,7 +4,8 @@ This repository contains a set of examples developed during, but not limited to 
 
 1. [Lesson 1](./lesson_1) - a webhook example
 2. [Lesson 2](./lesson_2) - some basic requirements and API definition for the core of the serverless platform
-3. [Lesson 3](./lesson_3) - WIP
+3. [Lesson 3](./lesson_3) - the implementation of the core of our serverless platform, allowing ad-hoc provision and execution of a piece of Python code
+3. [Lesson 4](./lesson_4) - WIP
 
 
 ### License
