@@ -21,6 +21,36 @@ A basic workflow would be:
 3. Finally, trigger a function execution with `POST /functions/trigger`
 
 
+You can even try a more complex example:
+1. Define a function
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/functions' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "event_type": "http|GET|/request/to/github",
+  "function_code": "import urllib.request\nwith urllib.request.urlopen('\''http://www.python.org/'\'') as f:\n    print(f.read().decode('\''utf-8'\''))",
+  "function_name": "github_request"
+}'
+```
+
+2. Then trigger it
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/functions/trigger' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "http_header": "not important now",
+  "http_body": "not important now",
+  "http_path": "/request/to/github",
+  "http_verb": "GET"
+}'
+```
+
+
+
 ## Links
 
 - [The architecture of a serverless platform](https://tomasz.janczuk.org/2018/03/how-to-build-your-own-serverless-platform.html), the first half of the article
