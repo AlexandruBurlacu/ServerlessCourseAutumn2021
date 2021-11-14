@@ -5,8 +5,9 @@ This repository contains a set of examples developed during, but not limited to 
 1. [Lesson 1](./lesson_1) - a webhook example
 2. [Lesson 2](./lesson_2) - some basic requirements and API definition for the core of the serverless platform
 3. [Lesson 3](./lesson_3) - the implementation of the core of our serverless platform, allowing ad-hoc provision and execution of a piece of Python code
-3. [Lesson 4](./lesson_4) - WIP
-
+4. [Lesson 4](./lesson_4) - the start of the implementation of the API gateway
+5. [Lesson 5](./lesson_5) - the API gateway works, and the system now launches functions asynchroneously + the execution is caped at one minute
+6. [Lesson 6](./lesson_6) - WIP
 
 ### License
 
