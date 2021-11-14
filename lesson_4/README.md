@@ -2,9 +2,9 @@
 
 ## Lesson 4: Implementing the API Gateway. Data services.
 
-4.1 Defining a `docker-compose.yml` with Minio, RabbitMQ, MySQL, Redis and Mongo
-4.2 Finding a way to pass values to and from triggered functions
-4.3 API Gateway implementation. Defining the architecture of the API Gateway + Serverless Platform
+- (4.1) Defining a `docker-compose.yml` with Minio, RabbitMQ, MySQL, Redis and Mongo
+- (4.2) Finding a way to pass values to and from triggered functions
+- (4.3) API Gateway implementation. Defining the architecture of the API Gateway + Serverless Platform
 
 
 In order to run this project, first create a virtual environment, either using `conda` or `venv` and then install everything with `pip install -r requirements.txt`.
