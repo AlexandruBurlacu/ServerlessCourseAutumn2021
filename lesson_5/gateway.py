@@ -115,9 +115,6 @@ class Session:
 
         serialized_header = "\n".join(f"{str(k)}: {str(v)}" for k, v in header)
 
-        print(self.parser.get_method())
-        print(http_path)
-
         response = requests.post("http://localhost:8000/functions/trigger",
                                     headers={"Content-Type": "application/json"},
                                     data=json.dumps({"http_body": json.dumps({"body": json.loads(body)},
@@ -126,8 +123,6 @@ class Session:
                                                     "http_path": http_path,
                                                     "http_verb": self.parser.get_method().decode()}))
         response_bodies = response.json().get("container_ids")
-
-        print(response_bodies)
 
         return corr_id, response_bodies[0] if len(response_bodies) > 0 else None
     

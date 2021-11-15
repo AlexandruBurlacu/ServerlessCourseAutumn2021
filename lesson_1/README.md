@@ -11,9 +11,9 @@ After that, run first the `webhook_server.py` using `uvicorn`, like this:
 uvicorn webhook_server:app
 ```
 
-And then, run the same way `webhook_listener.py`, but on port 7000. `uvicorn webhook_server:app --port 7000`
+And then, run the same way `webhook_listener.py`, but on port 7000. `uvicorn webhook_server:app --port 7000`.
 
-Play around with both in browser from their respective Swagger pages at `/docs`
+Play around with both in browser from their respective Swagger pages at `/docs`.
 
 
 ### License

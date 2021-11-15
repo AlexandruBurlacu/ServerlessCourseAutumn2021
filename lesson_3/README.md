@@ -13,7 +13,7 @@ uvicorn app:app
 
 **Note**: don't run it with `--reload`, because if you do, the server will notice changes in the working directory when you create a new function, restart the server, and in turn delete the "database" entry about the said function.
 
-Play around with both in browser from their respective Swagger pages at `/docs`.
+Play around with the platform in browser from their the Swagger page at `/docs`.
 
 A basic workflow would be:
 1. Create a serverless function with `POST /functions`
