@@ -114,6 +114,12 @@ If you then call `curl -v -XPOST -d '{"Hello": "Valera"}' -H 'Content-Type: appl
 - Gatway is based on the code from [this blogpost](https://mleue.com/posts/simple-python-tcp-server/)
 - [Some optimizations for a serverless platform](https://tomasz.janczuk.org/2018/03/how-to-build-your-own-serverless-platform.html), the second half of the article
 
+During the lecture was mentioned an interesting way to achieve further optimization of cold start latencies, namely __**Zygote**__ processes. Here are some links about it:
+- [What is a Zygote process in general](https://medium.com/masters-on-mobile/the-zygote-process-a5d4fc3503db)
+- [Zygote processes are mostly an Android VM trick](https://stackoverflow.com/questions/9153166/understanding-android-zygote-and-dalvikvm)
+- [Using Zygote-like forks with containers for serverless](https://www.usenix.org/system/files/conference/atc18/atc18-oakes.pdf)
+- [Similar idea to the one above, but with better environment isolation](https://ipads.se.sjtu.edu.cn/_media/publications/duasplos20.pdf)
+
 
 ### License
 
