@@ -1,4 +1,5 @@
 .venv/
+.functions_venv/
 __pycache__/
 code_repo/
 

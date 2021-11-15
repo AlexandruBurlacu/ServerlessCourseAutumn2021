@@ -136,9 +136,13 @@ def trigger_functions_execution(payload: HttpEventPayload = HttpEventPayload.exa
 
         volumes = {os.path.join(os.getcwd(), CODE_REPO_PATH, f_code_path): {
                             "bind": "/tmp/handler.py",
-                            "mode": "ro"}}
+                            "mode": "ro"},
+                   os.path.join(os.getcwd(), ".functions_venv/lib/python3.10/site-packages"): {
+                            "bind": "/tmp/site-packages",
+                            "mode": "ro"
+                   }}
 
-        command = f"timeout {TIMEOUT} python -u /tmp/handler.py"
+        command = f"sh -c 'export PYTHONPATH=$PYTHONPATH:/tmp/site-packages; timeout {TIMEOUT} python -u /tmp/handler.py'"
 
         environment = [f"HTTP_BODY={payload.http_body}",
                         f"HTTP_HEADER={payload.http_header}",
@@ -149,13 +153,15 @@ def trigger_functions_execution(payload: HttpEventPayload = HttpEventPayload.exa
             stderr=True,
             stdout=True,
             remove=True,
-            detach=True,
+            # detach=True,
+            network="cloud_net",
             name=str(uuid.uuid4()),
             volumes=volumes,
             environment=environment
         )
 
-        container_ref = controller.containers.run("python:3.8-slim", command, **configs)
+        container_ref = controller.containers.run("python:3.10-slim", command, **configs)
+        print(container_ref)
         all_container_ids.append(configs["name"])
 
     return {"status": "ok", "container_ids": all_container_ids}

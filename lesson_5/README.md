@@ -12,7 +12,9 @@
 
 In order to run this project you will need a fresh installation of Python, either standard or Anaconda, prefferably 3.10, because this version is used by the author, and `docker` and `docker-compose`.
 
-First create a virtual environment, either using `conda` or `venv` and then install everything with `pip install -r requirements.txt`. After that, launch the data services specified in `docker-compose.yml` via `docker-compose up`. Then, run the `app.py` using `uvicorn`, like this:
+You will need to pre-install the libraries which will be mounted into the functions. For this, please create a special virtual environment via `python3.10 -m venv .functions_venv` and once done, enter it and install the necessary libraries via `pip install -r requirements.functions.txt`.
+
+Now, to launch the platform, first create a virtual environment, either using `conda` or `venv` and then install everything with `pip install -r requirements.txt`. After that, launch the data services specified in `docker-compose.yml` via `docker-compose up`. Then, run the `app.py` using `uvicorn`, like this:
 
 ```
 uvicorn app:app
@@ -23,6 +25,7 @@ And finally, run `python gateway.py`. You're all set.
 The API Gateway (`gateway.py`) and the Serverless Platform (`app.py`) are not part of the `docker-compose.yml` because of 2 reasons:
 1. `app.py` has to interact with the `docker` daemon and specify volumes, which can get very tricky if used from within docker-compose
 2. They change much faster during current development, and continiously restarting these is cumbersome
+
 
 ## Example workflow
 
@@ -65,7 +68,7 @@ import pika
 
 # <add your libraries here>
 
-message_queue_uri = "localhost"
+message_queue_uri = "message_queue" # because the container attaches to the network defined for data services
 
 headers = {kv_pair.split(": ")[0]: kv_pair.split(": ")[1] for kv_pair in os.environ.get("HTTP_HEADER").splitlines()}
 body = json.loads(os.environ.get("HTTP_BODY"))
@@ -84,9 +87,24 @@ channel.queue_declare(queue=headers["X-Correlation-Id"])
 ##########################
 
 
-channel.basic_publish(exchange='', routing_key=headers["X-Correlation-Id"], body=body) # <- this response body
+channel.basic_publish(exchange='', routing_key=headers["X-Correlation-Id"], body=json.dumps(body)) # <- this response body, always make sure it's a str or bytes
 connection.close()
 ```
+
+For example, a complete function creation request:
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/functions' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "event_type": "http|POST|/echo",
+  "function_code": "import os\nimport json\n\nimport pika\n\n# <add your libraries here>\n\nmessage_queue_uri = \"message_queue\"\n\nheaders = {kv_pair.split(\": \")[0]: kv_pair.split(\": \")[1] for kv_pair in os.environ.get(\"HTTP_HEADER\").splitlines()}\nbody = json.loads(os.environ.get(\"HTTP_BODY\"))\npath = os.environ.get(\"HTTP_PATH\")\nverb = os.environ.get(\"HTTP_VERB\")\n\nconnection = pika.BlockingConnection(\n    pika.ConnectionParameters(host=message_queue_uri))\nchannel = connection.channel()\nchannel.queue_declare(queue=headers[\"X-Correlation-Id\"])\n\n\n##########################\n#   add your code here   #\n#  *define response body #\n##########################\n\n\nchannel.basic_publish(exchange='\'''\'', routing_key=headers[\"X-Correlation-Id\"], body=json.dumps(body)) # <- this response body\nconnection.close()\n",
+  "function_name": "echo"
+}'
+```
+
+If you then call `curl -v -XPOST -d '{"Hello": "Valera"}' -H 'Content-Type: application/json' http://localhost:5000/echo` the response should be `{"body": {"Hello": "Valera"}}`.
 
 
 
