@@ -35,7 +35,7 @@ from functionsplatform.sdk import log, trace_function, ...
 
 # Message -|> dict
 # Context -|> dict
-# Return -|> dict, but with key constraints
+# Return  -|> dict, but with key constraints
 
 def handle(message: Message, context: Message) -> Return:
     # some business logic
@@ -61,6 +61,8 @@ def handle(message: Message, context: Message) -> Return:
 - [From UX perspective](https://cxl.com/blog/error-messages/)
 - [About Error codes](https://softwareengineering.stackexchange.com/questions/209693/best-practices-to-create-error-codes-pattern-for-an-enterprise-project)
 - [Best practices with examples of how to handle HTTP API Errors](https://nordicapis.com/best-practices-api-error-handling/)
+
+Covering both error messages and API design, [a primer from Keras](https://blog.keras.io/category/essays.html), a deep learning library.
 
 #### Misc and mentions
 - We mentioned APL during the lecture, maybe you would want to try it, [here](https://tryapl.org/)
