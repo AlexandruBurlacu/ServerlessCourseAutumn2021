@@ -7,7 +7,8 @@ This repository contains a set of examples developed during, but not limited to 
 3. [Lesson 3](./lesson_3) - the implementation of the core of our serverless platform, allowing ad-hoc provision and execution of a piece of Python code
 4. [Lesson 4](./lesson_4) - the start of the implementation of the API gateway
 5. [Lesson 5](./lesson_5) - the API gateway works, and the system now launches functions asynchroneously + the execution is caped at one minute
-6. [Lesson 6](./lesson_6) - WIP
+6. [Lesson 6](./lesson_6) - defining what makes a good DX
+7. [Lesson 7](./lesson_7) - WIP
 
 ### License
 
