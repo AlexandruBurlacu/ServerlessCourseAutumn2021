@@ -19,7 +19,7 @@ channel.queue_declare(queue=headers["X-Correlation-Id"])
 
 message = {
     "headers": headers,
-    "body": body,
+    "body": body["body"],
     "path": path,
     "verb": verb,
     "message_type": "http"
