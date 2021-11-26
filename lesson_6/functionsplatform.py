@@ -1,17 +1,25 @@
 """
-functionsplatform OPERATION [--OPTIONS|-O]
+python functionsplatform.py COMMAND [--OPTIONS|-O]
+
+COMMANDs:
   create
   list
   delete
   trigger
   logs
   list-instances
-  help
+  lookup-instance
+
+OPTIONs:
+  --help        global help
+  --verbose
+  --version
+  --show-help   per-command help
 
 Example:
-  functionsplatform create --event-type=http|GET|/api/cats  [--from-file handler.py|--from-stream -] --name some_name
-  functionsplatform list --all|--filter
-  functionsplatform logs --instance-id=some_id --tail=100 --stderr
+  functionsplatform create --http-verb=GET --http-path=/api/cats  --code-file handler.py --name some_name
+  functionsplatform list [--filter=glob_patter]
+  functionsplatform logs some_instance_id
 """
 
 import argparse
@@ -21,6 +29,8 @@ import pprint
 import os
 
 import uuid
+
+import fnmatch
 
 __version__ = "0.1.0"
 
@@ -45,8 +55,8 @@ def create_function(platform_uri, args_string):
         "function_name": args.name
     }
 
-    body = requests.post(os.path.join(platform_uri, "functions"), json=payload)
-    pprint.pprint(body.json())
+    response = requests.post(os.path.join(platform_uri, "functions"), json=payload)
+    pprint.pprint(response.json())
 
 
 def delete_function(platform_uri, args_string):
@@ -58,26 +68,33 @@ def delete_function(platform_uri, args_string):
         parser.pprint.pprint_help()
         sys.exit()
     
-    body = requests.delete(os.path.join(platform_uri, f"functions/{args.name}"))
-    pprint.pprint(body.json())
+    response = requests.delete(os.path.join(platform_uri, f"functions/{args.name}"))
+    pprint.pprint(response.json())
 
 
 def list_functions(platform_uri, args_string):
     parser = argparse.ArgumentParser(usage="%(prog)s list [options]")
     parser.add_argument("--show-help", action="store_true")
+    parser.add_argument("--filter", type=str)
     args = parser.parse_args(args_string)
     if args.show_help:
         parser.pprint.pprint_help()
         sys.exit()
-    body = requests.get(os.path.join(platform_uri, "functions"))
-    pprint.pprint(body.json())
+
+    response = requests.get(os.path.join(platform_uri, "functions"))
+    if not args.filter:
+        pprint.pprint(response.json())
+    else:
+        body = response.json()
+        matching_keys = fnmatch.filter(body.keys(), args.filter)
+        pprint.pprint({key: body[key] for key in matching_keys})
 
 
 def trigger_function(platform_uri, args_string):
     parser = argparse.ArgumentParser(usage="%(prog)s trigger [options]")
     parser.add_argument("-P", "--http-path", type=str)
     parser.add_argument("-X", "--http-verb", type=str)
-    parser.add_argument("-d", "--http-body", type=str)
+    parser.add_argument("-d", "--http-body", default="{}", type=str)
     parser.add_argument("-H", "--http-headers", type=str)
     parser.add_argument("--show-help", action="store_true")
     args = parser.parse_args(args_string)
@@ -92,8 +109,8 @@ def trigger_function(platform_uri, args_string):
         "http_verb": args.http_verb.upper()
     }
 
-    body = requests.post(os.path.join(platform_uri, "functions/trigger"), json=payload)
-    pprint.pprint(body.json())
+    response = requests.post(os.path.join(platform_uri, "functions/trigger"), json=payload)
+    pprint.pprint(response.json())
 
 
 def list_instances(platform_uri, args_string):
@@ -104,8 +121,8 @@ def list_instances(platform_uri, args_string):
         parser.pprint.pprint_help()
         sys.exit()
     
-    body = requests.get(os.path.join(platform_uri, f"functions/instances"))
-    pprint.pprint(body.json())
+    response = requests.get(os.path.join(platform_uri, f"functions/instances"))
+    pprint.pprint(response.json())
 
 
 def lookup_instance(platform_uri, args_string):
@@ -117,19 +134,21 @@ def lookup_instance(platform_uri, args_string):
         parser.pprint.pprint_help()
         sys.exit()
     
-    body = requests.get(os.path.join(platform_uri, f"functions/instances/{args.instance_id}"))
-    pprint.pprint(body.json())
+    response = requests.get(os.path.join(platform_uri, f"functions/instances/{args.instance_id}"))
+    pprint.pprint(response.json())
 
 
 def show_function_logs(platform_uri, args_string):
     parser = argparse.ArgumentParser(usage="%(prog)s logs [options]")
-    parser.add_argument("name", type=str)
+    parser.add_argument("instance_id", metavar="instance-id", type=str)
     parser.add_argument("--show-help", action="store_true")
     args = parser.parse_args(args_string)
     if args.show_help:
         parser.pprint.pprint_help()
         sys.exit()
-    pprint.pprint(args)
+
+    response = requests.get(os.path.join(platform_uri, f"functions/instances/{args.instance_id}/logs"))
+    pprint.pprint(response.json())
 
 
 

@@ -9,6 +9,7 @@ from functools import partial
 import docker
 
 import uuid
+import datetime
 
 
 TIMEOUT = 60 # seconds
@@ -65,23 +66,22 @@ INSTANCES_DB = defaultdict(list) # gospadi prasti, act 2
 app = FastAPI()
 
 
-
-def _sanitize_function_def(func_def: dict, drop_fields: list):
-    clean_func_def = func_def.copy()
+def _sanitize_record(record: dict, drop_fields: list):
+    clean_record = record.copy()
     for field in drop_fields:
-        if field in func_def:
-            del clean_func_def[field]
-    return clean_func_def
+        if field in record:
+            del clean_record[field]
+    return clean_record
 
 
-def sanitize(function_defs: list[dict]):
-    return list(map(partial(_sanitize_function_def, drop_fields=["function_code"]), function_defs))
+def sanitize(records: list[dict], fields=list[str]):
+    return list(map(partial(_sanitize_record, drop_fields=fields), records))
 
 
 @app.get("/functions")
 def list_available_functions():
     global FUNCTIONS_DB
-    response = {event_t: sanitize(function_defs) for event_t, function_defs in FUNCTIONS_DB.items()}
+    response = {event_t: sanitize(function_defs, ["function_code"]) for event_t, function_defs in FUNCTIONS_DB.items()}
     return response
 
 
@@ -147,23 +147,54 @@ def trigger_functions_execution(payload: HttpEventPayload = HttpEventPayload.exa
                         f"HTTP_VERB={payload.http_verb}",
                         f"HTTP_PATH={payload.http_path}",]
 
+        resource_constraints = {"cpu_shares": 2, "mem_limit": "256mb", "pids_limit": 10}
+
+        log_config = docker.types.LogConfig(type=docker.types.LogConfig.types.JSON, config={
+                                              'max-size': '1g',
+                                              'labels': 'production_status,geo'
+                                            })
+
         configs = dict(
             stderr=True,
             stdout=True,
-            remove=True,
+            # remove=True,
             detach=True,
             network="cloud_net",
             name=str(uuid.uuid4()),
             volumes=volumes,
-            environment=environment
+            environment=environment,
+            log_config=log_config
         )
 
-        container_ref = controller.containers.run("alexburlacu/functionsplatform:python-worker", command, **configs)
-        print(container_ref)
+        __container_ref = controller.containers.run("alexburlacu/functionsplatform:python-worker",
+                                                    command,
+                                                    **configs,
+                                                    **resource_constraints)
         all_container_ids.append(configs["name"])
+        INSTANCES_DB[key].append({"trigger_time": str(datetime.datetime.now()), "instance_id": configs["name"], "args": environment})
 
     return {"status": "ok", "container_ids": all_container_ids}
 
 
+@app.get("/functions/instances")
+def list_all_instances():
+    global INSTANCES_DB
+    response = {event_t: sanitize(instance_records, ["args"]) for event_t, instance_records in INSTANCES_DB.items()}
+    return response
 
-# @app.get("/functions/instances/{instance_id}")
+
+@app.get("/functions/instances/{instance_id}")
+def lookup_specific_instance(instance_id: str = Path(...)):
+    global INSTANCES_DB
+    for event_t, instance_records in INSTANCES_DB.items():
+        for record in instance_records:
+            if record["instance_id"] == instance_id:
+                return {"status": "ok", "event_type": event_t, **record}
+    return {"status": "not_found"}
+
+
+@app.get("/functions/instances/{instance_id}/logs")
+def get_functions_instance_logs(instance_id: str = Path(...)):
+    controller = docker.from_env()
+    container = controller.containers.get(instance_id)
+    return {"logs": str(container.logs())}

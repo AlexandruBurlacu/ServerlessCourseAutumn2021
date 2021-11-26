@@ -8,23 +8,44 @@
 - [Later] Observability instrumentation (metrics, log collection, tracing support)
 - [Maybe] Some End-to-End tests
 
+### Launching the system
+
+In order to run this project you will need a fresh installation of Python, either standard or Anaconda, prefferably 3.10, because this version is used by the author, and `docker` and `docker-compose`.
+
+For this version of the project, you don't need to pre-install the libraries which will be mounted into the functions anymore. Instead, go into `./docker` subdir and run `docker build -t alexburlacu/functionsplatform:python-worker`.
+
+Now, to launch the platform, first create a virtual environment, either using `conda` or `venv` and then install everything with `pip install -r requirements.txt`. After that, launch the data services specified in `docker-compose.yml` via `docker-compose up`. Then, run the `app.py` using `uvicorn`, like this:
+
+```
+uvicorn app:app
+```
+
+And finally, run `python gateway.py`. You're all set. Now I would recommend you play arround with it using `functionsplatform.py` CLI and not bother using Swagger.
+
+
+
 ### CLI tool to CRUD/test-run functions
 
-Use `argparse`:
 ```
-functionsplatform OPERATION [--OPTIONS|-O]
+COMMANDs:
   create
   list
   delete
   trigger
   logs
   list-instances
-  help
+  lookup-instance
+
+OPTIONs:
+  --help        global help
+  --verbose
+  --version
+  --show-help   per-command help
 
 Example:
-  functionsplatform create --event-type=http|GET|/api/cats  [--from-file handler.py|--from-stream -] --name some_name
-  functionsplatform list --all|--filter
-  functionsplatform logs --instance-id=some_id --tail=100 --stderr
+  functionsplatform create --http-verb=GET --http-path=/api/cats  --code-file handler.py --name some_name
+  functionsplatform list [--filter=glob_patter]
+  functionsplatform logs some_instance_id
 ```
 
 ### API for more conveninent writing of functions (less boilerplate)
