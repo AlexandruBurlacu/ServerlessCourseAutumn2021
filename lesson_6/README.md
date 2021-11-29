@@ -1,12 +1,8 @@
-# Lesson 6
+# Serverless Course
 
-
-## SDK Components
-- CLI tool to CRUD/test-run functions
-- API for more conveninent writing of functions (less boilerplate)
-- Allow for reading function execution logs
-- [Later] Observability instrumentation (metrics, log collection, tracing support)
-- [Maybe] Some End-to-End tests
+## Lesson 6: What is DX? SDK Components
+- (6.1) What is DX, why it matters (Code documentation, Tests/Examples, API design, Error messages)
+- (6.2) Defining the SDK
 
 ### Launching the system
 
@@ -24,7 +20,15 @@ And finally, run `python gateway.py`. You're all set. Now I would recommend you 
 
 
 
-### CLI tool to CRUD/test-run functions
+### SDK Components
+- CLI tool to CRUD/test-run functions
+- API for more conveninent writing of functions (less boilerplate)
+- Allow for reading function execution logs
+- [Later] Observability instrumentation (metrics, log collection, tracing support)
+- [Maybe] Some End-to-End tests
+
+
+#### CLI tool to CRUD/test-run functions
 
 ```
 COMMANDs:
@@ -48,7 +52,7 @@ Example:
   functionsplatform logs some_instance_id
 ```
 
-### API for more conveninent writing of functions (less boilerplate)
+#### API for more conveninent writing of functions (less boilerplate)
 
 Example:
 ```python
@@ -63,7 +67,7 @@ def handle(message: Message, context: Message) -> Return:
     return {"something": of_value}
 ```
 
-## Links about DX
+### Links about DX
 
 #### Documentation
 - A way to document architecture decisions [can be found here](https://adr.github.io/)

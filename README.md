@@ -8,7 +8,8 @@ This repository contains a set of examples developed during, but not limited to 
 4. [Lesson 4](./lesson_4) - the start of the implementation of the API gateway
 5. [Lesson 5](./lesson_5) - the API gateway works, and the system now launches functions asynchroneously + the execution is caped at one minute
 6. [Lesson 6](./lesson_6) - defining what makes a good DX
-7. [Lesson 7](./lesson_7) - WIP
+7. [Lesson 7](./lesson_7) - scaling out the system with caching and load balancing
+8. [Lesson 8](./lesson_8) - WIP
 
 ### License
 
