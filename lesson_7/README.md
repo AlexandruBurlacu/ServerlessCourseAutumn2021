@@ -29,12 +29,10 @@
 - [Chapter from the SRE Book by Google, on this very topic #2](https://sre.google/sre-book/load-balancing-datacenter/)
 
 #### Caching
-- Cache eviction methods
-- Cache population methods (Write ahead/behind/around)
 - [Cold caches can cause thundering heards](https://instagram-engineering.com/thundering-herds-promises-82191c8af57d)
-- What is a CDNs
-- Database caches
-- Load balancer caches
+- [What is a CDNs](https://www.cloudflare.com/learning/cdn/what-is-a-cdn/)
+- [More on caching](https://aws.amazon.com/caching/database-caching/)
+- [Database caches](https://redfin.engineering/how-to-boost-postgresql-cache-performance-8db383dc2d8f), specifically Postgres
 
 #### Edge serverless computing examples
 - [From AWS](https://aws.amazon.com/lambda/edge/)
