@@ -1,0 +1,81 @@
+version: "2.4"
+
+services:  
+  message_queue:
+    image: rabbitmq:3.6-management-alpine
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks: 
+      - cloud_net
+
+  cache_service: 
+    image: redis:6.2.6
+    command: redis-server --requirepass sOmE_sEcUrE_pAsS
+    restart: always
+    ports:
+      - 6379:6379
+    # volumes:
+    #  - $PWD/redis-data:/var/lib/redis
+    #  - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_REPLICATION_MODE=master
+    networks: 
+      - cloud_net
+
+  document_db: 
+    image: mongo:4.4.6
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      - MONGO_INITDB_DATABASE=example
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=example
+    networks: 
+      - cloud_net
+
+  sql_db: 
+    image: postgres:10.4-alpine
+    ports: 
+      - 5432:5432
+    environment: 
+      - POSTGRES_USER=example
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=example
+    networks: 
+      - cloud_net
+
+  object_storage: 
+    image: minio/minio:RELEASE.2021-06-14T01-29-23Z
+    restart: always
+    # volumes:
+    #   - data1-1:/data1
+    ports:
+      - "9000:9000"
+    environment:
+      MINIO_ROOT_USER: minio
+      MINIO_ROOT_PASSWORD: minio123
+    command: server /mnt/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks: 
+      - cloud_net
+
+  jaeger:
+    # based on: https://www.jaegertracing.io/docs/1.25/getting-started/
+    image: jaegertracing/all-in-one:1.25
+    ports:
+      - 14268:14268 # collector
+      - 16686:16686 # ui
+    restart: on-failure
+    networks:
+      - cloud_net
+
+networks: 
+  cloud_net:
+    name: cloud_net
