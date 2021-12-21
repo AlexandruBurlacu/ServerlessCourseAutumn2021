@@ -10,7 +10,7 @@ This repository contains a set of examples developed during, but not limited to 
 6. [Lesson 6](./lesson_6) - defining what makes a good DX
 7. [Lesson 7](./lesson_7) - scaling out the system with caching and load balancing
 8. [Lesson 8](./lesson_8) - what are SLOs/SLAs, what is observability, and how to reduce tail latencies in distributed systems
-9. [Lesson 9](./lesson_9) - WIP
+9. [Lesson 9](./lesson_9) - final lecture about fault-tolerance
 
 ### License
 
